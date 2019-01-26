@@ -1,3 +1,5 @@
 data/
 .DS_Store
 .vscode/
+utils/data_reader.pyc
+utils/glove_pruner.pyc
