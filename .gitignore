@@ -1,1 +1,3 @@
-beer-ratings
+data/
+.DS_Store
+.vscode/
