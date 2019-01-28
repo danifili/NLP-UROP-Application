@@ -12,7 +12,7 @@ class CNN(nn.Module):
         self.tanh = nn.Tanh()
     
     def forward(self, feature_vectors, max_pool=True):
-        conv_out = self.conv(feature_vectors.permute(0, 2, 1))
+        conv_out = self.conv(feature_vectors.permute(0, 2, 1).float())  
         post_activation = self.tanh(conv_out)
         if max_pool:
             return post_activation.max(2)[0]

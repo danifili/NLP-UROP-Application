@@ -15,7 +15,7 @@ def read_data(filename):
     
     return {data_field["field"]: data_field["data"] for data_field in dataset}
 
-def tokenize(text, stop_words = 'english'):
+def tokenize(text, stop_words = None):
     vectorizer = CountVectorizer(stop_words = stop_words)
     analyser = vectorizer.build_analyzer()
     return analyser(text)  
