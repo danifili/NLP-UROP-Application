@@ -9,7 +9,7 @@ from tqdm import tqdm
 import numpy as np
 import pickle
 
-REVIEW_FIELD = "review/overall"
+REVIEW_FIELD = "review/aroma"
 
 def train_epoch(batch, encoder, classifier, optimizer_encoder, optimizer_classifier):
     criterion = torch.nn.MSELoss()
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     classifier = FFNN(100, 25, 8)
 
     learning_rate = 1e-2
-    n_epochs = 5
+    n_epochs = 10
 
     optimizer_encoder = torch.optim.Adam(encoder.parameters(), lr=learning_rate)
     optimizer_classifier = torch.optim.Adam(classifier.parameters(), lr=learning_rate)
@@ -91,24 +91,31 @@ if __name__ == "__main__":
         test_err = np.mean((test_pred-test_ans) ** 2)   
         print test_err
         test_errors.append(test_err)
+    
+    print (train_errors)
+    print (dev_errors)
+    print (test_errors)
 
-    with open('predictions_train.pickle', 'wb') as handle:
+
+    model = 'cnn'
+    field = 'aroma'
+    with open(model + '/' + field + 'predictions_train.pickle', 'wb') as handle:
         pickle.dump(train_pred, handle)
     
-    with open('answers_train.pickle', 'wb') as handle:
+    with open(model + '/' + field + 'answers_train.pickle', 'wb') as handle:
         pickle.dump(train_ans, handle)    
     
-    with open('predictions_train.pickle', 'wb') as handle:
+    with open(model + '/' + field + 'predictions_dev.pickle', 'wb') as handle:
         pickle.dump(dev_pred, handle)
     
-    with open('answers_dev.pickle', 'wb') as handle:
+    with open(model + '/' + field + 'answers_dev.pickle', 'wb') as handle:
         pickle.dump(dev_ans, handle)
     
-    with open('predictions_test.pickle', 'wb') as handle:
+    with open(model + '/' + field + 'predictions_test.pickle', 'wb') as handle:
         pickle.dump(test_pred, handle)
     
-    with open('answers_test.pickle', 'wb') as handle:
-        pickle.dump(test_pred, handle)
+    with open(model + '/' + field + 'answers_test.pickle', 'wb') as handle:
+        pickle.dump(test_ans, handle)
 
 
 

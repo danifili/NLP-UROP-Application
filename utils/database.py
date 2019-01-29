@@ -6,15 +6,13 @@ from tqdm import tqdm
 import torch
 from torch.autograd import Variable
 
-DATA_PATH = "../data/"
+DATA_PATH = "data/" #change to "../data" if want to run locally
 TRAINING_SET_FILE = DATA_PATH + "beer-ratings/train.csv"
-TEST_SET_FILE = DATA_PATH + "beer-ratings/test.csv"
 WORD_TO_EMBEDDING_FILE = DATA_PATH + "glove_prunned.txt"
 
 REVIEWS_FIELD = "review/text"
 
 TRAIN_SET = data_reader.read_data(TRAINING_SET_FILE)
-TEST_SET = data_reader.read_data(TEST_SET_FILE)
 WORD_TO_EMBEDDING = glove_pruner.load_words(WORD_TO_EMBEDDING_FILE)
 
 
@@ -41,7 +39,7 @@ class BeerReviewsDataset(data.Dataset):
         self.datasets = datasets
 
     def __len__(self):
-        return (self.end - self.start) / 10
+        return self.end - self.start
 
     def __getitem__(self, idx):
         if not (0 <= idx < len(self)):

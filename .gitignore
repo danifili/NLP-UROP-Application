@@ -3,3 +3,5 @@ data/
 .vscode/
 utils/data_reader.pyc
 utils/glove_pruner.pyc
+cnn/
+gru/
