@@ -9,7 +9,9 @@ from tqdm import tqdm
 import numpy as np
 import pickle
 
-REVIEW_FIELD = "review/aroma"
+model = 'cnn'
+field = 'palate'
+REVIEW_FIELD = "review/" + field
 
 def train_epoch(batch, encoder, classifier, optimizer_encoder, optimizer_classifier):
     criterion = torch.nn.MSELoss()
@@ -54,11 +56,16 @@ def predict(encoder, classifier, dataset):
     return np.array(predictions), np.array(map(float, results))
     
 if __name__ == "__main__":
+    print (model, field)
+
     database = Database()
     batch_size = 40
     dataloader = data.DataLoader(database.train_set, batch_size=batch_size, shuffle=True, drop_last=True)
 
-    encoder = CNN(300, 100, 3)
+    if model == "cnn":
+        encoder = CNN(300, 100, 3)
+    else:
+        encoder = GRU(300, 100)
     classifier = FFNN(100, 25, 8)
 
     learning_rate = 1e-2
@@ -96,26 +103,32 @@ if __name__ == "__main__":
     print (dev_errors)
     print (test_errors)
 
-
-    model = 'cnn'
-    field = 'aroma'
-    with open(model + '/' + field + 'predictions_train.pickle', 'wb') as handle:
+    with open(model + '/' + field + '/' + 'predictions_train.pickle', 'wb') as handle:
         pickle.dump(train_pred, handle)
     
-    with open(model + '/' + field + 'answers_train.pickle', 'wb') as handle:
+    with open(model + '/' + field + '/' + 'answers_train.pickle', 'wb') as handle:
         pickle.dump(train_ans, handle)    
     
-    with open(model + '/' + field + 'predictions_dev.pickle', 'wb') as handle:
+    with open(model + '/' + field + '/' +'predictions_dev.pickle', 'wb') as handle:
         pickle.dump(dev_pred, handle)
     
-    with open(model + '/' + field + 'answers_dev.pickle', 'wb') as handle:
+    with open(model + '/' + field + '/' +'answers_dev.pickle', 'wb') as handle:
         pickle.dump(dev_ans, handle)
     
-    with open(model + '/' + field + 'predictions_test.pickle', 'wb') as handle:
+    with open(model + '/' + field + '/' +'predictions_test.pickle', 'wb') as handle:
         pickle.dump(test_pred, handle)
     
-    with open(model + '/' + field + 'answers_test.pickle', 'wb') as handle:
+    with open(model + '/' + field + '/' +'answers_test.pickle', 'wb') as handle:
         pickle.dump(test_ans, handle)
+
+    with open(model + '/' + field + '/' +'train_errors.pickle', 'wb') as handle:
+        pickle.dump(train_errors, handle)
+
+    with open(model + '/' + field + '/' +'dev_errors.pickle', 'wb') as handle:
+        pickle.dump(dev_errors, handle)
+    
+    with open(model + '/' + field + '/' +'test_errors.pickle', 'wb') as handle:
+        pickle.dump(test_errors, handle)
 
 
 
