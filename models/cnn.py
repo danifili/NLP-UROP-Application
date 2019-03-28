@@ -35,5 +35,5 @@ class CNN(nn.Module):
 
 if __name__ == "__main__":
     cnn = CNN(100, 43, 3)
-    print cnn(Variable(torch.randn(5, 10, 100)))
+    print (cnn(Variable(torch.randn(5, 10, 100))))
 

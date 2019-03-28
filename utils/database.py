@@ -1,7 +1,7 @@
 from torch.utils import data
 import numpy as np
-import data_reader
-import glove_pruner
+import utils.data_reader as data_reader
+import utils.glove_pruner as glove_pruner
 from tqdm import tqdm
 import torch
 from torch.autograd import Variable
@@ -39,7 +39,7 @@ class BeerReviewsDataset(data.Dataset):
         self.datasets = datasets
 
     def __len__(self):
-        return self.end - self.start
+        return (self.end - self.start) // 10
 
     def __getitem__(self, idx):
         if not (0 <= idx < len(self)):
@@ -58,8 +58,8 @@ class BeerReviewsDataset(data.Dataset):
         return datapoint
     
     def _process_text(self, text):
-        tokens = filter(lambda word: word in WORD_TO_EMBEDDING, data_reader.tokenize(text))
-        embeddings_list = map(lambda word: WORD_TO_EMBEDDING[word], tokens)
+        tokens = list(filter(lambda word: word in WORD_TO_EMBEDDING, data_reader.tokenize(text)))
+        embeddings_list = list(map(lambda word: WORD_TO_EMBEDDING[word], tokens))
         embeddings_np_array = np.zeros((self.MAX_LENGTH, self.EMBEDDING_DIMS))
         if len(embeddings_list) > 0:
             embeddings_np_array[:min(self.MAX_LENGTH, len(embeddings_list))] = np.array(embeddings_list[:self.MAX_LENGTH])

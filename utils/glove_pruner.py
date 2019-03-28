@@ -1,4 +1,4 @@
-import data_reader
+import utils.data_reader
 from tqdm import tqdm
 
 def load_words(glove_filename):
@@ -6,7 +6,7 @@ def load_words(glove_filename):
     with open(glove_filename) as glove_file:
         for line in glove_file:
             split_line = line.split()
-            word, vec = str(split_line[0].lower()), map(float, split_line[1:])
+            word, vec = str(split_line[0].lower()), list(map(float, split_line[1:]))
             word_to_vec[word] = vec
     return word_to_vec
 
