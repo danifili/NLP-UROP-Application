@@ -9,7 +9,7 @@ from tqdm import tqdm
 import numpy as np
 import pickle
 
-model = 'cnn'
+model = 'gru'
 field = 'palate'
 REVIEW_FIELD = "review/" + field
 
@@ -34,11 +34,11 @@ def review_to_torch(review):
     return [1 if int_value > i else 0 for i in range(8)]
 
 def batch_reviews_to_torch(reviews):
-    return torch.LongTensor(map(review_to_torch, reviews))
+    return torch.LongTensor(list(map(review_to_torch, reviews)))
 
-def torch_to_review(torch_repr):
+def torch_to_review(torch_repr, tau=0.5):
     for i in range(len(torch_repr)):
-        if torch_repr[i] < 0.5:
+        if torch_repr[i] < tau:
             return 1 + 0.5 * i
     return 5.0
 
@@ -53,7 +53,7 @@ def predict(encoder, classifier, dataset):
             predictions.append(torch_to_review(torch_review))
         results.extend(batch[REVIEW_FIELD])
     
-    return np.array(predictions), np.array(map(float, results))
+    return np.array(predictions), np.array(list(map(float, results)))
     
 if __name__ == "__main__":
     print (model, field)
@@ -63,15 +63,15 @@ if __name__ == "__main__":
     dataloader = data.DataLoader(database.train_set, batch_size=batch_size, shuffle=True, drop_last=True)
 
     if model == "cnn":
-        encoder = CNN(300, 100, 3)
+        encoder = CNN(300, 200, 3)
     else:
-        encoder = GRU(300, 100)
-    classifier = FFNN(100, 25, 8)
+        encoder = GRU(300, 200)
+    classifier = FFNN(200, 50, 8)
 
-    learning_rate = 1e-2
+    learning_rate = 1e-3
     n_epochs = 10
 
-    optimizer_encoder = torch.optim.Adam(encoder.parameters(), lr=learning_rate)
+    optimizer_encoder = torch.optim.Adam(encoder.parameters(), lr=learning_rate, weight_decay=1e-4)
     optimizer_classifier = torch.optim.Adam(classifier.parameters(), lr=learning_rate)
 
 
@@ -85,18 +85,18 @@ if __name__ == "__main__":
 
         train_pred, train_ans = predict(encoder, classifier, database.train_set)
         train_err = np.mean((train_pred-train_ans) ** 2)
-        print train_err
+        print (train_err)
         train_errors.append(train_err)
 
         dev_pred, dev_ans = predict(encoder, classifier, database.dev_set)
         dev_err = np.mean((dev_pred-dev_ans) ** 2)
-        print dev_err
-        print dev_pred[:50], dev_ans[:50]
+        print (dev_err)
+        print (dev_pred[:50], dev_ans[:50])
         dev_errors.append(dev_err)
 
         test_pred, test_ans = predict(encoder, classifier, database.test_set) 
         test_err = np.mean((test_pred-test_ans) ** 2)   
-        print test_err
+        print (test_err)
         test_errors.append(test_err)
     
     print (train_errors)
